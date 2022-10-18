@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>实验四-图片切换</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: darkgray;
+            text-align: center;
+        }
+
+        .box {
+            width: 820px;
+            height: 864px;
+            margin: 80px auto 0;
+        }
+
+        .box .btn_mod {
+            width: 820px;
+            height: 110px;
+            margin: 0 auto;
+        }
+
+        .box .btn_mod #title {
+            margin-top: 16px;
+            font-size: 1.8em;
+        }
+
+        .box .content {
+            width: 820px;
+            height: 562px;
+            margin: 0 auto;
+        }
+
+        .box .content img {
+            width: 820px;
+            margin-top: 15px;
+        }
+
+        .box .content .pic_tit {
+            display: inline-block;
+            position: relative;
+            float: bottom;
+            width: 820px;
+            height: 50px;
+            top: -54px;
+            background: rgba(80, 80, 80, 0.5);
+        }
+
+        .box .content .pic_tit #pTit {
+            font-size: 1.8em;
+            font-weight: 450;
+            color: snow;
+            line-height: 50px;
+            /*word-spacing: 10px;*/
+        }
+
+        .box .change {
+            width: 820px;
+            height: 120px;
+        }
+
+        .box #pNum {
+            font-size: 2em;
+            color: #c62727;
+            font-weight: 600;
+            line-height: 58px;
+        }
+
+        .box input {
+            width: 200px;
+            height: 55px;
+            color: brown;
+            font-size: 2em;
+            line-height: 50px;
+            font-weight: 450;
+            background-color: #212323;
+            border-radius: 8px;
+            outline: none;
+            border: none;
+        }
+
+        .box input:hover {
+            opacity: .7;
+            color: brown;
+            font-weight: 700;
+        }
+
+    </style>
+    <script>
+        window.onload = function () {
+            var img_list = ['images/1.jpg', 'images/2.jpg', 'images/3.jpg', 'images/4.jpg', 'images/5.jpg','images/6.jpg'];
+            var titList = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+            var oBtn_xs = document.getElementById("btn_xs");
+            var oBtn_xh = document.getElementById("btn_xh");
+            var oImg = document.getElementById("img_list");
+            var oTitle = document.getElementById("title");
+            var oBtn_previous = document.getElementById("previous");
+            var oBtn_next = document.getElementById("next");
+            var oPicTit = document.getElementById("pTit");
+            var oPicNum = document.getElementById("pNum");
+
+            var enable = false;
+            var if_order = false;
+            var if_first = true;
+            var if_end = false;
+            var num = 0;
+            var n = 1;
+
+            oPicNum.innerHTML = n + "/" + img_list.length;
+            oPicTit.innerHTML = "第" + titList[0] + "张照片";
+            //顺序播放函数
+            oBtn_xs.onclick = function () {
+                oTitle.innerHTML = "图片顺序播放";
+                enable = true;
+                if_order = true;
+            }
+            //图片循环播放
+            oBtn_xh.onclick = function () {
+                enable = true;
+                oTitle.innerHTML = "图片循环播放";
+                if_order = false;
+                if_first = false;
+                if_end = false;
+            }
+            //切换下一张照片函数
+            oBtn_next.onclick = function () {
+                if (enable) {
+                    if (if_first) {
+                        if_first = false;
+                    }
+                    if (if_order) {
+                        if (num == img_list.length - 1) {
+                            if_end = true;
+                        }
+                    }
+                    if (if_end) {
+                        oPicTit.innerHTML = "已是最后一张照片";
+                    } else {
+                        num++;
+                        n++;
+                        if (num > img_list.length - 1 || n > img_list.length) {
+                            num = 0;
+                            n = 1;
+                        }
+                        oImg.src = img_list[num];
+                        oPicTit.innerHTML = "第" + titList[num] + "张照片";
+                        oPicNum.innerHTML = n + "/" + img_list.length;
+                    }
+                }
+            }
+            //切换上一张照片函数
+            oBtn_previous.onclick = function () {
+                if (enable) {
+                    if (if_end) {
+                        if_end = false;
+                    }
+                    if (if_order) {
+                        if (num == 0) {
+                            if_first = true;
+                        }
+                    }
+                    if (if_first) {
+                        oPicTit.innerHTML = "已是第一张照片";
+                    } else {
+                        num--;
+                        n--;
+                        if (num < 0 || n <= 0) {
+                            num = img_list.length - 1;
+                            n = img_list.length;
+                        }
+                        oImg.src = img_list[num];
+                        oPicTit.innerHTML = "第" + titList[num] + "张照片";
+                        oPicNum.innerHTML = n + "/" + img_list.length;
+                    }
+                }
+            }
+        }
+        // 循环播放(轮播效果）
+        // let oBtn_xh = document.getElementById("img_list");
+        // oBtn_xh.onclick = function () {
+        //     oTitle.innerHTML = "循环播放";
+        //     //每隔2000ms执行一次切换函数，执行无数次。
+        //     window.setInterval("oBtn_next.onclick()", "1400");
+        // }
+    </script>
+</head>
+<body>
+<div class="box">
+    <div class="btn_mod">
+        <input type="button" id="btn_xs" value="顺序播放">
+        <input type="button" id="btn_xh" value="循环播放">
+        <p id="title">请选择模式</p>
+    </div>
+    <div class="content">
+        <img id="img_list" src="images/1.jpg" alt="">
+        <span class="pic_tit"><p id="pTit">第一张照片</p></span>
+    </div>
+    <div class="change">
+        <h2 id="pNum">1/5</h2>
+        <input type="button" id="previous" value="上一张">
+        <input type="button" id="next" value="下一张">
+    </div>
+</div>
+</body>
+</html>
