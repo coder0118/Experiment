@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>实验四-图片切换</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: darkgray;
+            text-align: center;
+        }
+
+        .box {
+            width: 1439px;
+            height: 722px;
+            margin: 80px auto 0;
+        }
+
+        .box .btn_mod {
+            width: 820px;
+            height: 110px;
+            margin: 0 auto;
+        }
+
+        .box .btn_mod #title {
+            margin-top: 16px;
+            font-size: 1.8em;
+        }
+
+        .box .content {
+            width: 1439px;
+            height: 722px;
+            margin: 0 auto;
+        }
+
+        .box .content img {
+            width: 1439px;
+            height: 722px;
+            margin-top: 32px;
+        }
+
+        .box .content .pic_tit {
+            display: inline-block;
+            position: relative;
+            float: bottom;
+            width: 1439px;
+            height: 50px;
+            top: -54px;
+            background: rgba(80, 80, 80, 0.7);
+        }
+
+        .box .content .pic_tit #pTit {
+            font-size: 1.8em;
+            font-weight: 1439;
+            color: snow;
+            line-height: 50px;
+            /*word-spacing: 10px;*/
+        }
+
+        .box .change {
+            width: 820px;
+            height: 120px;
+            margin: 32px auto;
+        }
+
+        .box #pNum {
+            font-size: 2em;
+            color: #c62727;
+            font-weight: 600;
+            line-height: 58px;
+        }
+
+        .box input {
+            width: 200px;
+            height: 55px;
+            color: brown;
+            font-size: 2em;
+            line-height: 50px;
+            font-weight: 450;
+            background-color: #212323;
+            border-radius: 8px;
+            outline: none;
+            border: none;
+        }
+
+        .box input:hover {
+            opacity: .7;
+            color: brown;
+            font-weight: 700;
+        }
+
+        /*动画部分*/
+        #img_list:hover {
+            animation-name: pic; /*关键帧名称*/
+            /*animation-timing-function: ease-in-out; !*动画的速度曲线*!*/
+            /*animation-iteration-count: 1; !*动画播放的次数*!*/
+            animation-duration: .5s; /*动画所花费的时间*/
+            /*box-shadow: #bd2c30 ;*/
+            /*width: 105%;*/
+        }
+
+        .content:hover {
+            animation-name: pic;
+            animation-duration: .5s;
+        }
+
+        @keyframes pic {
+            /*!*定义关键帧、scaleDrew是需要绑定到选择器的关键帧名称*!*/
+            /*0% {*/
+            /*    transform: scale(1); !*开始为原始大小*!*/
+            /*}*/
+            /*25% {*/
+            /*    transform: scale(1.2); !*放大1.1倍*!*/
+            /*}*/
+            /*50% {*/
+            /*    transform: scale(1.25);*/
+            /*}*/
+            /*75% {*/
+            /*    transform: scale(1.2);*/
+            /*}*/
+            100% {
+                transform: scale(1.03);
+            }
+        }
+
+    </style>
+    <script>
+        window.onload = function () {
+            var img_list = ['images/1.jpg', 'images/2.jpg', 'images/3.jpg', 'images/4.jpg', 'images/5.jpg'];
+            var titList = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+            var oBtn_xs = document.getElementById("btn_xs");
+            var oBtn_xh = document.getElementById("btn_xh");
+            var oImg = document.getElementById("img_list");
+            var oTitle = document.getElementById("title");
+            var oBtn_previous = document.getElementById("previous");
+            var oBtn_next = document.getElementById("next");
+            var oPicTit = document.getElementById("pTit");
+            var oPicNum = document.getElementById("pNum");
+
+            var enable = false;
+            var if_order = false;
+            var if_first = true;
+            var if_end = false;
+            var num = 0;
+            var n = 1;
+            var aut = null; //声明计时器引用，提升至全局变量
+            var a = 0;
+
+            oPicNum.innerHTML = n + "/" + img_list.length;
+            oPicTit.innerHTML = "第" + titList[0] + "张照片";
+
+            //顺序播放函数
+            oBtn_xs.onclick = function () {
+                enable = true;
+                oTitle.innerHTML = "图片顺序播放";
+                enable = true;
+                if_order = true;
+                //
+                if (aut != null) {
+                    window.clearInterval(aut);
+                    aut = null;
+                }
+            }
+
+            //图片循环播放
+            oBtn_xh.onclick = function () {
+                a = 1 ;
+                enable = true;
+                oTitle.innerHTML = "图片循环播放";
+                if_order = false;
+                if_first = false;
+                if_end = false;
+                //判断计时器是否已被调用，防止累积现象发生
+                if (aut == null) {
+                    aut = window.setInterval(changeNext, 1000);
+                }
+            }
+
+            //给图片、图片切换按钮增添鼠标移入事件，以实现停留效果
+            oImg.addEventListener("mouseover", function () {
+                window.clearInterval(aut);
+                aut = null;
+            })
+            oBtn_previous.addEventListener("mouseover", function () {
+                window.clearInterval(aut);
+                aut = null;
+            })
+            oBtn_next.addEventListener("mouseover", function () {
+                window.clearInterval(aut);
+                aut = null;
+            })
+
+            //给图片、图片切换按钮增添鼠标移出事件，恢复轮播
+            oImg.addEventListener("mouseout", function () {
+                if (aut == null && if_order == false && a == 1) {
+                    aut = window.setInterval(changeNext, 1000);
+                }
+            })
+            oBtn_next.addEventListener("mouseout", function () {
+                if (aut == null && if_order == false && a == 1) {
+                    aut = window.setInterval(changeNext, 1000);
+                }
+            })
+            oBtn_previous.addEventListener("mouseout", function () {
+                if (aut == null && if_order == false && a == 1) {
+                    aut = window.setInterval(changeNext, 1000);
+                }
+            })
+
+            //轮播切换图片函数
+            function changeNext() {
+                num++;
+                n++;
+                if (num > img_list.length - 1 || n > img_list.length) {
+                    num = 0;
+                    n = 1;
+                }
+                oImg.src = img_list[num];
+                oPicTit.innerHTML = "第" + titList[num] + "张照片";
+                oPicNum.innerHTML = n + "/" + img_list.length;
+            }
+
+            //切换下一张照片函数
+            oBtn_next.onclick = function () {
+                if (enable) {
+                    if (if_first) {
+                        if_first = false;
+                    }
+                    if (if_order) {
+                        if (num === img_list.length - 1) {
+                            if_end = true;
+                        }
+                    }
+                    if (if_end) {
+                        oPicTit.innerHTML = "已是最后一张照片";
+                    } else {
+                        num++;
+                        n++;
+                        if (num > img_list.length - 1 || n > img_list.length) {
+                            num = 0;
+                            n = 1;
+                        }
+                        oImg.src = img_list[num];
+                        oPicTit.innerHTML = "第" + titList[num] + "张照片";
+                        oPicNum.innerHTML = n + "/" + img_list.length;
+                    }
+                }
+            }
+            //切换上一张照片函数
+            oBtn_previous.onclick = function () {
+                if (enable) {
+                    if (if_end) {
+                        if_end = false;
+                    }
+                    if (if_order) {
+                        if (num === 0) {
+                            if_first = true;
+                        }
+                    }
+                    if (if_first) {
+                        oPicTit.innerHTML = "已是第一张照片";
+                    } else {
+                        num--;
+                        n--;
+                        if (num < 0 || n <= 0) {
+                            num = img_list.length - 1;
+                            n = img_list.length;
+                        }
+                        oImg.src = img_list[num];
+                        oPicTit.innerHTML = "第" + titList[num] + "张照片";
+                        oPicNum.innerHTML = n + "/" + img_list.length;
+                    }
+                }
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="box">
+    <div class="btn_mod">
+        <input type="button" id="btn_xs" value="顺序播放">
+        <input type="button" id="btn_xh" value="循环播放">
+        <p id="title">请选择模式</p>
+    </div>
+    <div class="content">
+        <img id="img_list" src="images/4.jpg" alt="">
+        <span class="pic_tit"><p id="pTit"></p></span>
+    </div>
+    <div class="change">
+        <h2 id="pNum"></h2>
+        <input type="button" id="previous" value="上一张">
+        <input type="button" id="next" value="下一张">
+    </div>
+</div>
+</body>
+</html>
